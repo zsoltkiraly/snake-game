@@ -67,6 +67,13 @@ let directionChange = true;
 
 
 /*
+Audio
+*/
+let audio = document.querySelector('#snake-music');
+let audioControl = document.querySelector('#audio-control');
+
+
+/*
 Start & restart & pause
 */
 let start = true;
@@ -302,9 +309,6 @@ function draw(sS, rAC) {
     Eat food
     */
     if(sS.querySelector('.snake-head').classList.contains('apple')) {
-
-        
-
         if(sS.querySelector('.snake-head').classList.contains('cherry')) {
             score += 1;
 
@@ -344,6 +348,8 @@ function draw(sS, rAC) {
         start = true;
         restart = true;
 
+        audio.load();
+
         sS.classList.add('restart');
     }
 
@@ -364,13 +370,10 @@ function draw(sS, rAC) {
 }
 
 /*
-Music
+Audio
 */
 
 function music() {
-    let audio = document.querySelector('#snake-music');
-    let audioControl = document.querySelector('#audio-control');
-
     if(audioControl && audio) {
         audio.autoplay = true;
         audio.loop = true;
@@ -400,9 +403,6 @@ function music() {
 }
 
 function volume() {
-    let audio = document.querySelector('#snake-music');
-    let audioControl = document.querySelector('#audio-control');
-
     if(audioControl && audio) {
         let volumeUp = audioControl.querySelector('.volume-up');
         let volumeDown = audioControl.querySelector('.volume-down');
