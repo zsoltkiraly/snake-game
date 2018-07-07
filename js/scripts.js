@@ -1,4 +1,3 @@
-
 'use scrict';
 /*
 Snake - Code by Zsolt Király
@@ -123,7 +122,7 @@ function apple(sS) {
         } else {
             for(let p = 0; p < pixel.length; p++) {
                 if(parseFloat(pixel[p].getAttribute('data-id')) == randomNumber) {
-                    var randomBoolean = Math.random() >= 0.5;
+                    var randomBoolean = Math.random() >= .5;
 
                     if(randomBoolean) {
                         pixel[p].classList.add('apple');
@@ -141,22 +140,15 @@ function apple(sS) {
 Key down
 */
 document.addEventListener('keydown', function(e) {
-    console.log(start)
-
     switch(e.keyCode) {
         case 13: if(start) {            
             startGame();
             start = false;
-
-            console.log('keycode: 13 - start');
-
         }
         break;
 
         case 32: if(!start) {          
             pause = !pause;
-
-            console.log('keycode: 32 - pause');
 
             if(pause) {
                 clearInterval(game);
@@ -310,7 +302,16 @@ function draw(sS, rAC) {
     Eat food
     */
     if(sS.querySelector('.snake-head').classList.contains('apple')) {
-        score++;
+
+        
+
+        if(sS.querySelector('.snake-head').classList.contains('cherry')) {
+            score += 1;
+
+        } else {
+            score += 2;
+        }
+
         eat.play();
 
         let appleRemove = sS.querySelector('.apple');
@@ -365,11 +366,16 @@ function draw(sS, rAC) {
 /*
 Music
 */
-let audio = document.querySelector('#snake-music');
-let audioControl = document.querySelector('#audio-control');
 
 function music() {
+    let audio = document.querySelector('#snake-music');
+    let audioControl = document.querySelector('#audio-control');
+
     if(audioControl && audio) {
+        audio.autoplay = true;
+        audio.loop = true;
+        audio.load();
+
         let volumeUp = audioControl.querySelector('.volume-up');
         let volumeDown = audioControl.querySelector('.volume-down');
         let playAndPause = audioControl.querySelector('.play-and-pause');
@@ -394,6 +400,9 @@ function music() {
 }
 
 function volume() {
+    let audio = document.querySelector('#snake-music');
+    let audioControl = document.querySelector('#audio-control');
+
     if(audioControl && audio) {
         let volumeUp = audioControl.querySelector('.volume-up');
         let volumeDown = audioControl.querySelector('.volume-down');
@@ -420,6 +429,7 @@ draw(snakeSection, rowAndColumn);
 
 function startGame() {
     if(start){
+
         apple(snakeSection);
 
         game = setInterval(function() {
