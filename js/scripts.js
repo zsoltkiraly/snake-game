@@ -1,0 +1,437 @@
+
+'use scrict'
+/*
+Snake - Code by Zsolt Király
+v1.0.2 - 2018-07-07
+*/
+
+let snakeSection = document.querySelector('#snake');
+let rowAndColumn = 20;
+let pixelWidthAndHeight = 32;
+let borderWidth = 15;
+
+let game;
+let snake = [];
+
+
+/*
+Snake default position
+*/
+snake[0] = {
+    x : rowAndColumn / 2,
+    y : rowAndColumn / 2
+};
+
+
+/*
+Load audio file
+*/
+
+let dead = new Audio();
+let eat = new Audio();
+let up = new Audio();
+let right = new Audio();
+let left = new Audio();
+let down = new Audio();
+
+dead.src = "audio/dead.mp3";
+eat.src = "audio/eat.mp3";
+up.src = "audio/up.mp3";
+right.src = "audio/right.mp3";
+left.src = "audio/left.mp3";
+down.src = "audio/down.mp3";
+
+/*
+Speed
+*/
+let speed = 100;
+
+
+/*
+Score
+*/
+let score = 0;
+
+
+/*
+Time
+*/
+let time = 0;
+let timer;
+let timerElement = document.querySelector('#game-info .time span');
+
+/*
+Direction
+*/
+let d;
+let directionChange = true;
+
+
+/*
+Start & restart & pause
+*/
+let start = true;
+let restart = false;
+let pause = false;
+
+/*
+Game area
+*/
+function gameArea(sS, rAC) {
+    sS.setAttribute('style', 'border-width: ' + borderWidth + 'px; width: ' + (pixelWidthAndHeight * rowAndColumn + borderWidth * 2) +'px;')
+    
+    for(let i = 0; i < rAC; i++) {
+        let row = '<div style="height:' + pixelWidthAndHeight + 'px;" class="row" data-y="' + (i + 1) + '">';
+
+        let j = 0;
+        for(let j = 0; j < rAC; j++) {
+            row += '<div style="height:' + pixelWidthAndHeight + 'px; width:' + pixelWidthAndHeight + 'px;" class="pixel" data-x="' + (j + 1) + '"></div>';
+        }
+        row +='</div>';
+
+        sS.innerHTML += row;
+    }
+
+    let pixel = sS.querySelectorAll('.pixel');
+
+    if(pixel.length > 0) {
+        for(let p = 0; p < pixel.length; p++) {
+            pixel[p].setAttribute('data-id', p + 1);
+        }
+    }
+}
+
+
+/*
+Food
+*/
+function apple(sS) {
+    let pixel = sS.querySelectorAll('.pixel:not(.snake)');
+
+    let appleCoordinate = [];
+
+    if(pixel.length >0) {
+        for(let i = 0; i < pixel.length; i++) {
+            appleCoordinate.push(parseFloat(pixel[i].getAttribute('data-id')));
+        }
+
+        let randomNumber = appleCoordinate[Math.floor(Math.random() * appleCoordinate.length)];
+
+        if(sS.querySelectorAll('.apple').length > 0) {
+            sS.querySelector('.apple').classList.remove('apple', 'cherry');
+
+        } else {
+            for(let p = 0; p < pixel.length; p++) {
+                if(parseFloat(pixel[p].getAttribute('data-id')) == randomNumber) {
+                    var randomBoolean = Math.random() >= 0.5;
+
+                    if(randomBoolean) {
+                        pixel[p].classList.add('apple');
+                    } else {
+                        pixel[p].classList.add('apple', 'cherry');
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+/*
+Key down
+*/
+document.addEventListener('keydown', function(e) {
+    console.log(start)
+
+    switch(e.keyCode) {
+        case 13: if(start) {            
+            startGame();
+            start = false;
+
+            console.log('keycode: 13 - start');
+
+        }
+        break;
+
+        case 32: if(!start) {          
+            pause = !pause;
+
+            console.log('keycode: 32 - pause');
+
+            if(pause) {
+                clearInterval(game);
+            } else {
+                game = setInterval(function() {
+                    draw(snakeSection, rowAndColumn);
+                }, speed)
+            }
+        }
+        break;
+
+        case 37: if (d !== 'right' && directionChange) {
+            d = 'left';
+            left.play();
+            directionChange  = false;
+        }
+        break;
+
+        case 38: if (d !== 'down' && directionChange) {
+            d = 'up';
+            up.play();
+            directionChange  = false;
+        }
+        break;
+
+        case 39: if (d !== 'left' && directionChange) {
+            d = 'right';
+            right.play();
+            directionChange  = false;
+        }
+        break;
+
+        case 40: if (d !== 'up' && directionChange) {
+            d = 'down';
+            down.play();
+            directionChange  = false;
+        }
+        break;
+    }
+}, false);
+
+
+/*
+Collision
+*/
+function collision(head, array){
+    if(array.length > 0) {
+        for(let i = 0; i < array.length; i++) {
+            if(head.x == array[i].x && head.y == array[i].y) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+
+/*
+Draw
+*/
+function draw(sS, rAC) {
+    /*
+    Restart set default
+    */
+    if(restart) {
+        sS.classList.remove('restart');
+
+        while(snake.length > 0) {
+            snake.pop();
+        }
+        snake[0] = {
+            x : rowAndColumn / 2,
+            y : rowAndColumn / 2
+        };
+
+        score = 0;
+        time = 0;
+        apple(sS);
+    }
+
+
+    /*
+    Draw snake
+    */
+    let allSnake = sS.querySelectorAll('.snake');
+
+    if(allSnake.length > 0) {
+        for( let j = 0; j < allSnake.length; j++){
+            allSnake[j].classList.remove('snake');
+        }
+    }
+
+
+    if(snake.length > 0) {
+        for( let i = 0; i < snake.length ; i++){
+            let snakeDraw = sS.querySelectorAll('.row')[snake[i].y - 1].querySelectorAll('.pixel')[snake[i].x - 1];
+
+            if(snakeDraw) {
+                snakeDraw.classList.add('snake');
+            }
+        }
+    }
+
+    let snakeX = snake[0].x;
+    let snakeY = snake[0].y;
+
+    let oldHeadX = snakeX;
+    let oldHeadY = snakeY;
+
+    if(d == 'left') {
+        snakeX -= 1;
+
+    } else if(d == 'up'){
+        snakeY -= 1 ;
+
+    } else if(d == 'right') {
+        snakeX += 1;
+
+    } else if(d == 'down') {
+        snakeY += 1;
+    }
+
+
+    /*
+    Remove all snake head and set new snake head
+    */
+    let pixel = sS.querySelectorAll('.pixel');
+
+    if(pixel.length > 0) {
+        for( let p = 0; p < pixel.length; p++){
+            pixel[p].classList.remove('snake-head', 'left', 'right', 'up', 'down');
+        }
+    }
+
+
+    /*
+    Default start direction
+    */
+    if(d == undefined){
+        d = 'up';
+    }
+    
+    let snakeHead = sS.querySelectorAll('.row')[oldHeadY - 1].querySelectorAll('.pixel')[oldHeadX - 1];
+
+    if(snakeHead) {
+        snakeHead.classList.add('snake-head', d);
+    }
+
+
+    /*
+    Eat food
+    */
+    if(sS.querySelector('.snake-head').classList.contains('apple')) {
+        score++;
+        eat.play();
+
+        let appleRemove = sS.querySelector('.apple');
+
+        if(appleRemove) {
+            appleRemove.classList.remove('apple', 'cherry');
+        }
+
+        apple(sS);
+    }else {
+        snake.pop();
+    }
+
+    let newHead = {
+        x : snakeX,
+        y : snakeY
+    }
+
+    restart = false;
+
+    /*
+    Die
+    */
+    if(snakeX < 1 || snakeX > rowAndColumn || snakeY < 1 || snakeY > rowAndColumn || collision(newHead,snake)){
+        dead.play();
+
+        clearInterval(game);
+        clearInterval(timer);
+
+        start = true;
+        restart = true;
+
+        sS.classList.add('restart');
+    }
+
+    /*
+    Set array
+    */
+    snake.unshift(newHead);
+
+    /*
+    Change direction
+    */
+    directionChange = true;
+
+    /*
+    Score
+    */
+    document.querySelector('#game-info .score span').innerHTML = String(score).padStart(3,0);
+}
+
+/*
+Music
+*/
+let audio = document.querySelector('#snake-music');
+let audioControl = document.querySelector('#audio-control');
+
+function music() {
+    if(audioControl && audio) {
+        let volumeUp = audioControl.querySelector('.volume-up');
+        let volumeDown = audioControl.querySelector('.volume-down');
+        let playAndPause = audioControl.querySelector('.play-and-pause');
+
+        playAndPause.addEventListener('click', function() {
+            if(playAndPause.classList.contains('pause')) {
+                audio.play();
+
+                playAndPause.classList.remove('pause');
+                playAndPause.querySelector('img').setAttribute('src', 'images/music_pause.png');
+
+            } else {
+                audio.pause();
+
+                playAndPause.classList.add('pause');
+                playAndPause.querySelector('img').setAttribute('src', 'images/music_play.png');
+            }
+        }, false);
+
+        audio.volume = .5;
+    }
+}
+
+function volume() {
+    if(audioControl && audio) {
+        let volumeUp = audioControl.querySelector('.volume-up');
+        let volumeDown = audioControl.querySelector('.volume-down');
+
+        volumeDown.addEventListener('click', function() {
+            if(audio.volume > 0.001) {
+                audio.volume /= 2;
+            }
+        }, false);
+
+        volumeUp.addEventListener('click', function() {
+            if(audio.volume < 1) {
+                audio.volume *= 2;
+            }
+        }, false);
+    }
+}
+
+music();
+volume();
+
+gameArea(snakeSection, rowAndColumn);
+draw(snakeSection, rowAndColumn);
+
+function startGame() {
+    if(start){
+        apple(snakeSection);
+
+        game = setInterval(function() {
+            draw(snakeSection, rowAndColumn);
+        }, speed)
+
+        snakeSection.classList.remove('start-screen');
+        timerElement.innerHTML = '000';
+
+        timer = setInterval(function() {
+            time++
+            timerElement.innerHTML = String(time).padStart(3,0);
+        }, 1000)
+    }
+}
