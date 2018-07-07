@@ -1,5 +1,5 @@
 
-'use scrict'
+'use scrict';
 /*
 Snake - Code by Zsolt Király
 v1.0.2 - 2018-07-07
