@@ -223,9 +223,14 @@ function draw(sS, rAC) {
     if(restart) {
         sS.classList.remove('restart');
 
+
+        /*
+        Remove snake
+        */
         while(snake.length > 0) {
             snake.pop();
         }
+
         snake[0] = {
             x : rowAndColumn / 2,
             y : rowAndColumn / 2
