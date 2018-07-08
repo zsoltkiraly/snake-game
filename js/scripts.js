@@ -342,7 +342,7 @@ function draw(sS, rAC) {
     restart = false;
 
     /*
-    Die
+    Dead
     */
     if(snakeX < 1 || snakeX > rowAndColumn || snakeY < 1 || snakeY > rowAndColumn || collision(newHead,snake)){
         dead.play();
