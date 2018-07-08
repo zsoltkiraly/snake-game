@@ -1,7 +1,7 @@
 # Snake v1.0.5
 
 <br />
-<a href="http://zsoltkiraly.com/developments/snake-game/" target="_blank">DEMO PAGE</a><br />
+<a href="http://zsoltkiraly.com/developments/snake-game/" target="_blank">DEMO PAGE</a><br /><br />
 
 <img src="http://zsoltkiraly.com/developments/_images/snake-001.jpg">
 
