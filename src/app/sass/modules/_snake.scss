@@ -1,179 +1,203 @@
-body {
-	background-image: url(../images/grass_2.png);
-	background-repeat: repeat;
-	overflow: hidden;
-}
+@media only screen and (min-width: 1600px) {
+	body {
+		background-image: url(../images/grass_2.png);
+		background-repeat: repeat;
+		overflow: hidden;
+	}
 
-@font-face {
-    font-family: 'Pixel';
-    src: url('../fonts/pixel.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-}
+	@font-face {
+	    font-family: 'Pixel';
+	    src: url('../fonts/pixel.ttf') format('truetype');
+	    font-weight: normal;
+	    font-style: normal;
+	}
 
-section#snake {
-    position: relative;
-    display: block;
-    font-size: 0;
-    margin: 50px auto 0;
-    border-color: $black;
-    border-style: solid;
-    background-color: rgba(0,0,0, .9);
+	section#snake {
+	    position: relative;
+	    display: block;
+	    font-size: 0;
+	    margin: 50px auto 0;
+	    border-color: $black;
+	    border-style: solid;
+	    background-color: rgba(0,0,0, .9);
 
-	@include box-shadow(inset 0 0 50px #444);
+		@include box-shadow(inset 0 0 50px #444);
 
-	&.restart {
-		&:after {
-			content: '';
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			color: red;
-			background-color: rgba(0,0,0, .8); 
-			z-index: 2;
+		&.restart {
+			&:after {
+				content: '';
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				color: red;
+				background-color: rgba(0,0,0, .8); 
+				z-index: 2;
+			}
+
+			&:before {
+				content: 'GAME OVER \A RESTART press ENTER';
+				white-space: pre;
+				position: absolute;
+				z-index: 3;
+				font-family: 'Pixel';
+				color: white;
+				font-size: 40px;
+				width: 100%;
+				top: 50%;
+				left: 50%;
+				display: inline-block;
+				text-align: center;
+				transform: translate(-50%, -50%);
+			}
 		}
 
-		&:before {
-			content: 'GAME OVER \A RESTART press ENTER';
-			white-space: pre;
+		&.start-screen {
+			&:after {
+				content: '';
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				color: red;
+				background-color: rgba(0,0,0, .8); 
+				z-index: 2;
+			}
+
+			&:before {
+				content: 'START press ENTER';
+				white-space: pre;
+				position: absolute;
+				z-index: 3;
+				font-family: 'Pixel';
+				color: white;
+				font-size: 40px;
+				width: 100%;
+				top: 50%;
+				left: 50%;
+				display: inline-block;
+				text-align: center;
+
+				@include translate(-50%, -50%);
+			}
+		}
+
+	    .row {
+	        display: block;
+	        .pixel {
+	            position: relative;
+	            display: inline-block;
+
+				&.snake,
+				&.apple {
+	            	background-repeat: no-repeat;
+	            	background-position: center;
+
+	            	@include background-size(contain);
+				}
+
+	            &.snake {
+	            	background-image: url(../images/snake_body.png);
+
+	                &.snake-head {
+	                    &.left { background-image: url(../images/snake_head_left.png); }
+	                    &.up { background-image: url(../images/snake_head_up.png); }
+	                    &.right { background-image: url(../images/snake_head_right.png); }
+	                    &.down { background-image: url(../images/snake_head_down.png); }
+	                }
+	            }
+
+	            &.apple { background-image: url(../images/cherry.png); }
+	            &.apple.cherry { background-image: url(../images/apple.png); }
+	        }
+	    }
+	}
+
+	section#game-info {
+		position: absolute;
+		top: 50px;
+		left: 50px;
+		font-family: 'Pixel';
+		font-size: 45px;
+		color: white;
+		padding: 50px;
+		background-color: rgba(0,0,0, .9);
+		border: 15px solid $black;
+
+		span { float: right; }
+
+		.time { margin-bottom: 10px; }
+	}
+
+	section#pause {
+		position: absolute;
+		bottom: 50px;
+		left: 50%;
+		font-family: 'Pixel';
+		font-size: 30px;
+		color: white;
+		padding: 20px;
+		background-color: rgba(0,0,0, .9);
+		border: 15px solid $black;
+		
+		@include translateX(-50%);
+	}
+
+	section#audio-control {
+		position: absolute;
+		top: 50px;
+		right: 0;
+
+		.volume-up,
+		.volume-down,
+		.play-and-pause {
+			display: inline-block;
+			position: relative;
+			margin-right: 50px;
+			cursor: pointer;
+		}
+
+		.volume-up {
+			margin-right: 25px;
+		}
+	}
+
+	section#worm {
+		position: absolute;
+		display: block;
+		right: 50px;
+		bottom: -2px;
+	}
+
+	section#tree {
+		position: absolute;
+		display: block;
+		left: 50px;
+		bottom: -5px;
+	}
+}
+
+@media only screen and (max-width: 1599px) {
+	html {
+		height: 100%;
+		width: 100%;
+
+		&:after {
+			content: 'Your screen resolution is not supported';
 			position: absolute;
-			z-index: 3;
-			font-family: 'Pixel';
-			color: white;
-			font-size: 40px;
-			width: 100%;
 			top: 50%;
 			left: 50%;
-			display: inline-block;
-			text-align: center;
-			transform: translate(-50%, -50%);
+
+			@include translate(-50%, -50%);
 		}
 	}
 
-	&.start-screen {
-		&:after {
-			content: '';
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			color: red;
-			background-color: rgba(0,0,0, .8); 
-			z-index: 2;
-		}
+	body {
+		display: none;
+		visibility: hidden;
 
-		&:before {
-			content: 'START press ENTER';
-			white-space: pre;
-			position: absolute;
-			z-index: 3;
-			font-family: 'Pixel';
-			color: white;
-			font-size: 40px;
-			width: 100%;
-			top: 50%;
-			left: 50%;
-			display: inline-block;
-			text-align: center;
-			transform: translate(-50%, -50%);
-		}
+		@include opacity(0);
 	}
-
-    .row {
-        display: block;
-        .pixel {
-            position: relative;
-            display: inline-block;
-
-            &.snake {
-            	background-repeat: no-repeat;
-            	background-size: contain;
-            	background-position: center;
-            	background-image: url(../images/snake_body.png);
-
-                &.snake-head {
-                    &.left { background-image: url(../images/snake_head_left.png); }
-                    &.up { background-image: url(../images/snake_head_up.png); }
-                    &.right { background-image: url(../images/snake_head_right.png); }
-                    &.down { background-image: url(../images/snake_head_down.png); }
-                }
-            }
-
-            &.apple {
-            	background-repeat: no-repeat;
-            	background-size: contain;
-            	background-position: center;
-            	background-image: url(../images/cherry.png);
-            }
-
-            &.apple.cherry {
-            	background-image: url(../images/apple.png);
-            }
-        }
-    }
-}
-
-section#game-info {
-	position: absolute;
-	top: 50px;
-	left: 50px;
-	font-family: 'Pixel';
-	font-size: 45px;
-	color: white;
-	padding: 50px;
-	background-color: rgba(0,0,0, .9);
-	border: 15px solid $black;
-
-	span { float: right; }
-
-	.time { margin-bottom: 10px; }
-}
-
-section#pause {
-	position: absolute;
-	bottom: 50px;
-	left: 50%;
-	transform: translateX(-50%);
-	font-family: 'Pixel';
-	font-size: 30px;
-	color: white;
-	padding: 20px;
-	background-color: rgba(0,0,0, .9);
-	border: 15px solid $black;
-}
-
-section#audio-control {
-	position: absolute;
-	top: 50px;
-	right: 0;
-
-	.volume-up,
-	.volume-down,
-	.play-and-pause {
-		display: inline-block;
-		position: relative;
-		margin-right: 50px;
-		cursor: pointer;
-	}
-
-	.volume-up {
-		margin-right: 25px;
-	}
-}
-
-section#worm {
-	position: absolute;
-	display: block;
-	right: 50px;
-	bottom: -2px;
-}
-
-section#tree {
-	position: absolute;
-	display: block;
-	left: 50px;
-	bottom: -5px;
 }

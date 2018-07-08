@@ -421,27 +421,31 @@ function volume() {
     }
 }
 
-music();
-volume();
+if (window.matchMedia('only screen and (min-width:1600px)').matches) {
+    music();
+    volume();
 
-gameArea(snakeSection, rowAndColumn);
-draw(snakeSection, rowAndColumn);
+    gameArea(snakeSection, rowAndColumn);
+    draw(snakeSection, rowAndColumn);
+}
 
 function startGame() {
-    if(start){
+    if (window.matchMedia('only screen and (min-width:1600px)').matches) {
+        if(start){
 
-        apple(snakeSection);
+            apple(snakeSection);
 
-        game = setInterval(function() {
-            draw(snakeSection, rowAndColumn);
-        }, speed)
+            game = setInterval(function() {
+                draw(snakeSection, rowAndColumn);
+            }, speed)
 
-        snakeSection.classList.remove('start-screen');
-        timerElement.innerHTML = '000';
+            snakeSection.classList.remove('start-screen');
+            timerElement.innerHTML = '000';
 
-        timer = setInterval(function() {
-            time++
-            timerElement.innerHTML = String(time).padStart(3,0);
-        }, 1000)
+            timer = setInterval(function() {
+                time++
+                timerElement.innerHTML = String(time).padStart(3,0);
+            }, 1000)
+        }
     }
 }
