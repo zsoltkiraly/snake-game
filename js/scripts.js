@@ -22,6 +22,7 @@ snake[0] = {
 };
 
 
+
 /*
 Load audio file
 */
@@ -50,6 +51,12 @@ let speed = 100;
 Score
 */
 let score = 0;
+
+
+/*
+Pause
+*/
+let isPaused = false;
 
 
 /*
@@ -158,11 +165,10 @@ document.addEventListener('keydown', function(e) {
             pause = !pause;
 
             if(pause) {
-                clearInterval(game);
+                isPaused = true;
+
             } else {
-                game = setInterval(function() {
-                    draw(snakeSection, rowAndColumn);
-                }, speed)
+                isPaused = false;
             }
         }
         break;
@@ -201,8 +207,8 @@ document.addEventListener('keydown', function(e) {
 /*
 Collision
 */
-function collision(head, array){
-    if(array.length > 0) {
+function selfCollision(head, array){
+    if(array.length > 3) {
         for(let i = 0; i < array.length; i++) {
             if(head.x == array[i].x && head.y == array[i].y) {
                 return true;
@@ -216,6 +222,9 @@ function collision(head, array){
 /*
 Draw
 */
+
+let drawSnake = true;
+
 function draw(sS, rAC) {
     /*
     Restart set default
@@ -239,30 +248,10 @@ function draw(sS, rAC) {
         score = 0;
         time = 0;
         apple(sS);
+
+        drawSnake = true;
     }
 
-
-    /*
-    Draw snake
-    */
-    let allSnake = sS.querySelectorAll('.snake');
-
-    if(allSnake.length > 0) {
-        for( let j = 0; j < allSnake.length; j++){
-            allSnake[j].classList.remove('snake');
-        }
-    }
-
-
-    if(snake.length > 0) {
-        for( let i = 0; i < snake.length ; i++){
-            let snakeDraw = sS.querySelectorAll('.row')[snake[i].y - 1].querySelectorAll('.pixel')[snake[i].x - 1];
-
-            if(snakeDraw) {
-                snakeDraw.classList.add('snake');
-            }
-        }
-    }
 
     let snakeX = snake[0].x;
     let snakeY = snake[0].y;
@@ -283,68 +272,16 @@ function draw(sS, rAC) {
         snakeY += 1;
     }
 
-
-    /*
-    Remove all snake head and set new snake head
-    */
-    let pixel = sS.querySelectorAll('.pixel');
-
-    if(pixel.length > 0) {
-        for( let p = 0; p < pixel.length; p++){
-            pixel[p].classList.remove('snake-head', 'left', 'right', 'up', 'down');
-        }
-    }
-
-
-    /*
-    Default start direction
-    */
-    if(d == undefined){
-        d = 'up';
-    }
-    
-    let snakeHead = sS.querySelectorAll('.row')[oldHeadY - 1].querySelectorAll('.pixel')[oldHeadX - 1];
-
-    if(snakeHead) {
-        snakeHead.classList.add('snake-head', d);
-    }
-
-
-    /*
-    Eat food
-    */
-    if(sS.querySelector('.snake-head').classList.contains('apple')) {
-        if(sS.querySelector('.snake-head').classList.contains('cherry')) {
-            score += 1;
-
-        } else {
-            score += 2;
-        }
-
-        eat.play();
-
-        let appleRemove = sS.querySelector('.apple');
-
-        if(appleRemove) {
-            appleRemove.classList.remove('apple', 'cherry');
-        }
-
-        apple(sS);
-    }else {
-        snake.pop();
-    }
-
     let newHead = {
         x : snakeX,
         y : snakeY
     }
 
-    restart = false;
 
     /*
     Dead
     */
-    if(snakeX < 1 || snakeX > rowAndColumn || snakeY < 1 || snakeY > rowAndColumn || collision(newHead,snake)){
+    if(snakeX < 1 || snakeX > rowAndColumn || snakeY < 1 || snakeY > rowAndColumn || selfCollision(newHead,snake)){
         dead.play();
 
         clearInterval(game);
@@ -356,6 +293,8 @@ function draw(sS, rAC) {
         audio.load();
 
         sS.classList.add('restart');
+
+        drawSnake = false;
     }
 
     /*
@@ -363,10 +302,90 @@ function draw(sS, rAC) {
     */
     snake.unshift(newHead);
 
+
+    if(drawSnake ) {
+        /*
+        Draw snake
+        */
+        let allSnake = sS.querySelectorAll('.snake');
+
+        if(allSnake.length > 0) {
+            for( let j = 0; j < allSnake.length; j++){
+                allSnake[j].classList.remove('snake');
+            }
+        }
+
+
+        if(snake.length > 0) {
+            for( let i = 0; i < snake.length ; i++){
+                let snakeDraw = sS.querySelectorAll('.row')[snake[i].y - 1].querySelectorAll('.pixel')[snake[i].x - 1];
+
+                if(snakeDraw) {
+                    snakeDraw.classList.add('snake');
+                }
+            }
+        }
+
+
+        /*
+        Remove all snake head and set new snake head
+        */
+        let pixel = sS.querySelectorAll('.pixel');
+
+        if(pixel.length > 0) {
+            for( let p = 0; p < pixel.length; p++){
+                pixel[p].classList.remove('snake-head', 'left', 'right', 'up', 'down');
+            }
+        }
+
+
+        /*
+        Default start direction
+        */
+        if(d == undefined){
+            d = 'up';
+        }
+        
+        let snakeHead = sS.querySelectorAll('.row')[newHead.y - 1].querySelectorAll('.pixel')[newHead.x - 1];
+
+        if(snakeHead) {
+            snakeHead.classList.add('snake-head', d);
+        }
+
+
+        /*
+        Eat food
+        */
+        if(sS.querySelector('.snake-head').classList.contains('apple')) {
+            if(sS.querySelector('.snake-head').classList.contains('cherry')) {
+                score += 1;
+
+            } else {
+                score += 2;
+            }
+
+            eat.play();
+
+            let appleRemove = sS.querySelector('.apple');
+
+            if(appleRemove) {
+                appleRemove.classList.remove('apple', 'cherry');
+            }
+
+            apple(sS);
+        }else {
+            snake.pop();
+        }
+
+        restart = false;
+
+    }
+
     /*
     Change direction
     */
     directionChange = true;
+
 
     /*
     Score
@@ -431,7 +450,10 @@ if (window.matchMedia('only screen and (min-width:1600px)').matches) {
     volume();
 
     gameArea(snakeSection, rowAndColumn);
-    draw(snakeSection, rowAndColumn);
+    draw(snakeSection, rowAndColumn)
+
+    let startBody = snakeSection.querySelectorAll('.row')[rowAndColumn / 2].querySelectorAll('.pixel')[rowAndColumn / 2 - 1];
+    startBody.classList.add('snake');
 }
 
 function startGame() {
@@ -441,15 +463,19 @@ function startGame() {
             apple(snakeSection);
 
             game = setInterval(function() {
-                draw(snakeSection, rowAndColumn);
+                if(!isPaused) {
+                    draw(snakeSection, rowAndColumn);
+                }
             }, speed)
 
             snakeSection.classList.remove('start-screen');
             timerElement.innerHTML = '000';
 
             timer = setInterval(function() {
-                time++
-                timerElement.innerHTML = String(time).padStart(3,0);
+                if(!isPaused) {
+                    time++
+                    timerElement.innerHTML = String(time).padStart(3,0);
+                }
             }, 1000)
         }
     }
