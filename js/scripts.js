@@ -60,7 +60,7 @@ let isPaused = false;
 
 
 /*
-Time
+Timer
 */
 let time = 0;
 let timer;
@@ -81,11 +81,10 @@ let audioControl = document.querySelector('#audio-control');
 
 
 /*
-Start & restart & pause
+Start & restart
 */
 let start = true;
 let restart = false;
-let pause = false;
 
 /*
 Game area
@@ -162,14 +161,7 @@ document.addEventListener('keydown', function(e) {
         break;
 
         case 32: if(!start) {          
-            pause = !pause;
-
-            if(pause) {
-                isPaused = true;
-
-            } else {
-                isPaused = false;
-            }
+            isPaused = !isPaused;
         }
         break;
 
