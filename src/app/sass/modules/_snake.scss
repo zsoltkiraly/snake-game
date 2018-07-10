@@ -1,6 +1,6 @@
 @media only screen and (min-width: 1600px) {
 	body {
-		background-image: url(../images/brick.png);
+		background-image: url(../images/grass_1.png);
 		background-repeat: repeat;
 		overflow: hidden;
 	}
@@ -183,12 +183,14 @@
 	html {
 		height: 100%;
 		width: 100%;
+		background-color: black;
 
 		&:after {
-			content: 'Your screen resolution is not supported';
+			content: 'Your screen resolution is not supported!';
 			position: absolute;
 			top: 50%;
 			left: 50%;
+			color: white;
 
 			@include translate(-50%, -50%);
 		}
