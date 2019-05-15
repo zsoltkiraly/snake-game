@@ -395,8 +395,6 @@ function music() {
         audio.loop = true;
         audio.load();
 
-        let volumeUp = audioControl.querySelector('.volume-up');
-        let volumeDown = audioControl.querySelector('.volume-down');
         let playAndPause = audioControl.querySelector('.play-and-pause');
 
         playAndPause.addEventListener('click', function() {
